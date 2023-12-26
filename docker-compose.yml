@@ -4,6 +4,33 @@
 services:
   # This service will extend code from dcape
   app:
+    labels:
+      - traefik.http.services.${APP_TAG}.loadbalancer.server.port=8088
+    cap_add:
+      - sys_ptrace                          # Only here to help testing
+      - net_admin                           # Allow NFT, used by AutoBan
+      - net_raw                             # Allow NFT, used by AutoBan
+    ports:
+#      - "8088:8088"
+#      - "6060:5060/udp"                     # SIP UDP port
+#      - "6060:5060"                         # SIP TCP port
+#      - "6061:5061"                         # SIP TLS port
+#      - "10000-10099:10000-10099/udp"       # RTP ports
+#      - "8089:8089"
     environment:
-      # Some var to keep YML struct
-      - DEBUG=yes
+      - SYSLOG_LEVEL=${SYSLOG_LEVEL-4}      # Logging
+      - HOSTNAME=${TELE_SRV:-sip}.${DOMAIN:-dev.test}
+      - PULSE_SERVER=unix:/run/pulse/socket # Use host audio
+      - PULSE_COOKIE=/run/pulse/cookie      # Use host audio
+#      - WEBSMSD_PORT=${WEBSMSD_PORT:-80}     # WEBSMSD internal port
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/ssl/certs:/etc/ssl/certs:ro
+      - ./var/pulse:/run/pulse:rshared          # Use host audio
+      - ${DCAPE_ROOT}/var/traefik:/acme:ro  # acme.json
+      - ${APP_ROOT}/data:/srv                # Persistent storage
+#      - ./etc/a15:/etc/asterisk
+#      - ./var/build/cyber_mega_phone_2k:/var/lib/asterisk/static-http/cmp2k:ro
+#      - ./var/build/sipml5:/var/lib/asterisk/static-http/sipml5:ro
+#      - ./var/build/tryit-jssip:/var/lib/asterisk/static-http/jssip:ro
