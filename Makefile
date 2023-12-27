@@ -59,7 +59,38 @@ use-template:
 
 .default-deploy: prep
 
-prep: asterisk/pjsip.conf
+prep: data/etc/asterisk/pjsip.conf dirs data/var/pulse/socket
 
-asterisk/pjsip.conf: .env asterisk/pjsip.conf.tmpl
-	sed -e "s|=PASSWORD=|$$EXTPASSWORD|g" $@.tmpl > $@
+data/etc/asterisk/pjsip.conf: .env data/etc/asterisk/pjsip.conf.tmpl
+	@sed -e "s|==PASSWORD|$$EXTPASSWORD|g" $@.tmpl > $@
+
+dirs: data/etc/ssl/asterisk data/var/spool/asterisk data/var/lib/asterisk/moh
+
+data/etc/ssl/asterisk:
+	@mkdir -p $@
+
+data/var/spool/asterisk:
+	@mkdir -p $@
+
+data/var/lib/asterisk/moh:
+	@mkdir -p $@
+
+data/run/pulse:
+	@mkdir -p $@
+
+data/run/pulse/socket: data/run/pulse
+	@touch $@
+
+assets:
+	@mkdir -p $@
+
+assets/sipml5: assets
+	@git clone https://github.com/DoubangoTelecom/sipml5.git $@
+
+## Run aster cli
+cli:
+	@docker compose -p $(APP_TAG) exec app asterisk -rvvvvvddddd
+
+sh:
+	@docker compose -p $(APP_TAG) exec app bash
+

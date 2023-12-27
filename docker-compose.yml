@@ -12,25 +12,25 @@ services:
       - net_raw                             # Allow NFT, used by AutoBan
     ports:
 #      - "8088:8088"
-#      - "6060:5060/udp"                     # SIP UDP port
-#      - "6060:5060"                         # SIP TCP port
-#      - "6061:5061"                         # SIP TLS port
-#      - "10000-10099:10000-10099/udp"       # RTP ports
+      - "5060:5060/udp"                     # SIP UDP port
+      - "5060:5060"                         # SIP TCP port
+      - "5061:5061"                         # SIP TLS port
+      - "10000-10099:10000-10099/udp"       # RTP ports
 #      - "8089:8089"
     environment:
       - SYSLOG_LEVEL=${SYSLOG_LEVEL-4}      # Logging
-      - HOSTNAME=${TELE_SRV:-sip}.${DOMAIN:-dev.test}
-      - PULSE_SERVER=unix:/run/pulse/socket # Use host audio
-      - PULSE_COOKIE=/run/pulse/cookie      # Use host audio
+      - HOSTNAME=${APP_SITE}
+      - PULSE_SERVER=unix:/srv/run/pulse/socket # Use host audio
+      - PULSE_COOKIE=/srv/run/pulse/cookie      # Use host audio
 #      - WEBSMSD_PORT=${WEBSMSD_PORT:-80}     # WEBSMSD internal port
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - /etc/ssl/certs:/etc/ssl/certs:ro
-      - ./var/pulse:/run/pulse:rshared          # Use host audio
       - ${DCAPE_ROOT}/var/traefik:/acme:ro  # acme.json
       - ${APP_ROOT}/data:/srv                # Persistent storage
+#      - ${APP_ROOT}/assets/sipml5:/var/lib/asterisk/static-http/sipml5:ro
+#      - ${APP_ROOT}/assets/ctxSip:/var/lib/asterisk/static-http/ctx:ro
 #      - ./etc/a15:/etc/asterisk
 #      - ./var/build/cyber_mega_phone_2k:/var/lib/asterisk/static-http/cmp2k:ro
-#      - ./var/build/sipml5:/var/lib/asterisk/static-http/sipml5:ro
 #      - ./var/build/tryit-jssip:/var/lib/asterisk/static-http/jssip:ro
